@@ -7,7 +7,9 @@ package object humanresourcemachine {
 
   type Steps = Vector[State]
 
-  type Result = Disjunction[String, State]
+  type Result = Disjunction[(Steps, String), Steps]
+
+  type InstructionResult = Disjunction[String, State]
 
   private val handsAreEmpty: DLeft[String] = DLeft("hands are empty")
 
@@ -22,7 +24,7 @@ package object humanresourcemachine {
   }
 
   sealed trait Instruction {
-    def run(level: Level, state: State): Result
+    def run(level: Level, state: State): InstructionResult
 
     val gameValue: String
   }
@@ -41,7 +43,7 @@ package object humanresourcemachine {
   case object Inbox extends Instruction {
     val error: DLeft[String] = DLeft("empty inbox")
 
-    override def run(level: Level, state: State): Result = {
+    override def run(level: Level, state: State): InstructionResult = {
       for {
         head <- state.in.headOption.toRightMemo(error)
       } yield {
@@ -57,8 +59,8 @@ package object humanresourcemachine {
   }
 
   case object Outbox extends Instruction {
-    override def run(level: Level, state: State): Result = {
-      state.hands.fold[Result](handsAreEmpty) { value =>
+    override def run(level: Level, state: State): InstructionResult = {
+      state.hands.fold[InstructionResult](handsAreEmpty) { value =>
         state.copy(
           out = value +: state.out,
           hands = None,
@@ -71,7 +73,7 @@ package object humanresourcemachine {
   }
 
   case class CopyFrom(i: Int) extends Instruction {
-    override def run(level: Level, state: State): Result = {
+    override def run(level: Level, state: State): InstructionResult = {
       for {
         maybeValue <- state.board.lift(i).toRightMemo(outOfBounds(i))
         value <- maybeValue.toRightMemo(isEmpty(i))
@@ -85,8 +87,8 @@ package object humanresourcemachine {
   }
 
   case class CopyTo(i: Int) extends Instruction {
-    override def run(level: Level, state: State): Result = {
-      state.hands.fold[Result](handsAreEmpty) { value =>
+    override def run(level: Level, state: State): InstructionResult = {
+      state.hands.fold[InstructionResult](handsAreEmpty) { value =>
         state.copy(
           board = state.board.updated(i, Some(value)),
           here = state.here + 1
@@ -98,7 +100,7 @@ package object humanresourcemachine {
   }
 
   case class Add(i: Int) extends Instruction {
-    override def run(level: Level, state: State): Result = {
+    override def run(level: Level, state: State): InstructionResult = {
       for {
         hands <- state.hands.toRightMemo(handsAreEmpty)
         maybeValue <- state.board.lift(i).toRightMemo(outOfBounds(i))
@@ -115,7 +117,7 @@ package object humanresourcemachine {
   }
 
   case class Sub(i: Int) extends Instruction {
-    override def run(level: Level, state: State): Result = {
+    override def run(level: Level, state: State): InstructionResult = {
       for {
         hands <- state.hands.toRightMemo(handsAreEmpty)
         maybeValue <- state.board.lift(i).toRightMemo(outOfBounds(i))
@@ -132,7 +134,7 @@ package object humanresourcemachine {
   }
 
   case class BumpUp(i: Int) extends Instruction {
-    override def run(level: Level, state: State): Result = {
+    override def run(level: Level, state: State): InstructionResult = {
       for {
         maybeValue <- state.board.lift(i).toRightMemo(outOfBounds(i))
         value <- maybeValue.toRightMemo(isEmpty(i))
@@ -150,7 +152,7 @@ package object humanresourcemachine {
   }
 
   case class BumpDown(i: Int) extends Instruction {
-    override def run(level: Level, state: State): Result = {
+    override def run(level: Level, state: State): InstructionResult = {
       for {
         maybeValue <- state.board.lift(i).toRightMemo(outOfBounds(i))
         value <- maybeValue.toRightMemo(isEmpty(i))
@@ -168,7 +170,7 @@ package object humanresourcemachine {
   }
 
   case class Jump(i: Int) extends Instruction {
-    override def run(level: Level, state: State): Result = {
+    override def run(level: Level, state: State): InstructionResult = {
       state.copy(
         here = i
       ).right
@@ -178,7 +180,7 @@ package object humanresourcemachine {
   }
 
   case class JumpIfZero(i: Int) extends Instruction {
-    override def run(level: Level, state: State): Result = {
+    override def run(level: Level, state: State): InstructionResult = {
       for {
         hands <- state.hands.toRightMemo(handsAreEmpty)
       } yield {
@@ -196,7 +198,7 @@ package object humanresourcemachine {
   }
 
   case class JumpIfNegative(i: Int) extends Instruction {
-    override def run(level: Level, state: State): Result = {
+    override def run(level: Level, state: State): InstructionResult = {
       for {
         hands <- state.hands.toRightMemo(handsAreEmpty)
       } yield {

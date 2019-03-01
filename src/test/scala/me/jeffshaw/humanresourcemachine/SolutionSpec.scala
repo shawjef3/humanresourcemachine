@@ -57,7 +57,7 @@ class SolutionSpec extends FunSuite {
         )
       )
 
-    val result = solution.run
+    val result = solution.results
 
     assertResult(condition.expectedOut)(result(condition).fold(_ => ???, states => states.last.out))
   }

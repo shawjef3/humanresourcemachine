@@ -65,11 +65,14 @@ final case class Solution(
     } yield result
   }
 
-  lazy val run: Map[Level.Condition, Disjunction[(Steps, String), Steps]] = {
-    for (condition@Level.Condition(in, _) <- level.conditions.iterator) yield {
-      val initialState = State.init(in)
-      val result = run(condition, initialState, Vector.empty)
-      condition -> result
+  def run(condition: Level.Condition): Result = {
+    val initialState = State.init(condition.in)
+    run(condition, initialState, Vector.empty)
+  }
+
+  lazy val results: Map[Level.Condition, Result] = {
+    for (condition <- level.conditions.iterator) yield {
+      condition -> run(condition)
     }
   }.toMap
 
@@ -78,7 +81,7 @@ final case class Solution(
     * @return the history and the error, or the history and the current state.
     */
   @tailrec
-  def run(condition: Level.Condition, state: State, history: Vector[State]): Disjunction[(Steps, String), Steps] = {
+  def run(condition: Level.Condition, state: State, history: Vector[State]): Result = {
     val result = step(condition, state)
     result match {
       case DLeft(DLeft(error)) =>
