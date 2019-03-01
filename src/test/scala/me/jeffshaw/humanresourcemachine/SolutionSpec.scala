@@ -6,8 +6,6 @@ class SolutionSpec extends FunSuite {
 
   test("countdown") {
 
-    import Solution._
-
     val condition = {
       val in = Vector(9,-5,0,2)
 
