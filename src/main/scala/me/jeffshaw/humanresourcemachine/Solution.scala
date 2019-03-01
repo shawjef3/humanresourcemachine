@@ -1,6 +1,8 @@
+package me.jeffshaw.humanresourcemachine
+
 import scala.annotation.tailrec
-import scalaz._
 import scalaz.Scalaz._
+import scalaz._
 
 final case class State(
   in: Vector[Int],

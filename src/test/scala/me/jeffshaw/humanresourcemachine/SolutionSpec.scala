@@ -1,3 +1,5 @@
+package me.jeffshaw.humanresourcemachine
+
 import org.scalatest.FunSuite
 
 class SolutionSpec extends FunSuite {
