@@ -2,7 +2,7 @@ package me.jeffshaw.humanresourcemachine
 
 import org.scalatest.FunSuite
 
-class SolutionSpec extends FunSuite {
+class Spec extends FunSuite {
 
   test("countdown") {
 
@@ -57,7 +57,7 @@ class SolutionSpec extends FunSuite {
         )
       )
 
-    assertResult(1)(solution.results)
+    assertResult(1)(solution.results.size)
     assertResult(condition.expectedOut)(solution.results(condition).fold(_ => ???, states => states.last.out))
   }
 
