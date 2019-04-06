@@ -244,39 +244,37 @@ class Spec extends FunSuite {
       Solution(
         level = level,
         instructions = Vector(
-          Inbox,
-          // accumulator
-          CopyTo(0),
-          // value storage
-          CopyTo(2),
-          Inbox,
-          // multiplication counter
-          CopyTo(1),
-          // skip multiplication by zero
-          JumpIfZero(19),
-          CopyFrom(0),
-          // skip multiplication by zero
-          JumpIfZero(19),
-          // multiplication by 1 is identity
-          BumpDown(1),
-          JumpIfZero(18),
-          // multiplication by addition loop
-          CopyFrom(2),
-          Add(0),
-          CopyTo(0),
-          BumpDown(1),
-          // return value if multiplication counter == 0
-          JumpIfZero(18),
-          CopyFrom(2),
-          // continue multiplication loop
-          Jump(11),
-          CopyFrom(0),
-          Outbox,
-          Jump(1)
+          /*01*/Inbox,
+                // accumulator
+          /*02*/CopyTo(0),
+                // value storage
+          /*03*/CopyTo(2),
+          /*04*/Inbox,
+                // multiplication counter
+          /*05*/CopyTo(1),
+                // skip multiplication by zero
+          /*06*/JumpIfZero(19),
+          /*07*/CopyFrom(0),
+                // skip multiplication by zero
+          /*08*/JumpIfZero(19),
+                // multiplication by 1 is identity
+          /*09*/BumpDown(1),
+          /*10*/JumpIfZero(18),
+                // multiplication by addition loop
+          /*11*/CopyFrom(2),
+          /*12*/Add(0),
+          /*13*/CopyTo(0),
+          /*14*/BumpDown(1),
+                // return value if multiplication counter == 0
+          /*15*/JumpIfZero(18),
+          /*16*/CopyFrom(2),
+                // continue multiplication loop
+          /*17*/Jump(11),
+          /*18*/CopyFrom(0),
+          /*19*/Outbox,
+          /*20*/Jump(1)
         )
       )
-
-    assertResult(20)(solution.instructions.size)
 
     assertResult(1)(solution.results.size)
     assertResult(condition.expectedOut)(solution.results(condition).fold(x => {

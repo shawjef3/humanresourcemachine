@@ -188,9 +188,9 @@ package object humanresourcemachine {
 
   case class CopyTo(i: Int) extends Instruction {
     override def run(level: Level, state: State): InstructionResult = {
-      state.hands.fold[InstructionResult](handsAreEmpty) { value =>
+      state.hands.fold[InstructionResult](handsAreEmpty) { _ =>
         state.copy(
-          board = state.board.updated(i, Some(value)),
+          board = state.board.updated(i, state.hands),
           here = state.here + 1
         ).right
       }
