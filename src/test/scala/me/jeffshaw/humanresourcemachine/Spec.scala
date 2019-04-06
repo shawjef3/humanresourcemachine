@@ -16,7 +16,7 @@ class Spec extends FunSuite {
 
     val actual =
       Jump(3).run(
-        Level(Set(), Vector.fill[Option[Int]](10)(None)),
+        Level(Set(), Vector()),
         state
       )
 
@@ -36,7 +36,7 @@ class Spec extends FunSuite {
 
     val actual =
       JumpIfZero(3).run(
-        Level(Set(), Vector.fill[Option[Int]](10)(None)),
+        Level(Set(), Vector()),
         state
       )
 
@@ -56,7 +56,7 @@ class Spec extends FunSuite {
 
     val actual =
       JumpIfZero(3).run(
-        Level(Set(), Vector.fill[Option[Int]](10)(None)),
+        Level(Set(), Vector()),
         state
       )
 
@@ -76,7 +76,7 @@ class Spec extends FunSuite {
 
     val actual =
       JumpIfZero(3).run(
-        Level(Set(), Vector.fill[Option[Int]](10)(None)),
+        Level(Set(), Vector()),
         state
       )
 
@@ -96,7 +96,7 @@ class Spec extends FunSuite {
 
     val actual =
       BumpUp(0).run(
-        Level(Set(), Vector.fill[Option[Int]](10)(None)),
+        Level(Set(), Vector()),
         state
       )
 
@@ -121,7 +121,7 @@ class Spec extends FunSuite {
 
     val actual =
       BumpDown(0).run(
-        Level(Set(), Vector.fill[Option[Int]](10)(None)),
+        Level(Set(), Vector()),
         state
       )
 
@@ -146,13 +146,12 @@ class Spec extends FunSuite {
 
     val actual =
       Add(0).run(
-        Level(Set(), Vector.fill[Option[Int]](10)(None)),
+        Level(Set(), Vector()),
         state
       )
 
     val expected =
       state.copy(
-        board = Vector(Some(3)),
         hands = Some(7),
         here = state.here + 1
       ).right
@@ -254,30 +253,30 @@ class Spec extends FunSuite {
           // multiplication counter
           CopyTo(1),
           // skip multiplication by zero
-          JumpIfZero(18),
+          JumpIfZero(19),
           CopyFrom(0),
           // skip multiplication by zero
-          JumpIfZero(18),
+          JumpIfZero(19),
           // multiplication by 1 is identity
           BumpDown(1),
-          JumpIfZero(20),
+          JumpIfZero(18),
           // multiplication by addition loop
           CopyFrom(2),
           Add(0),
           CopyTo(0),
           BumpDown(1),
-          JumpIfZero(20),
+          // return value if multiplication counter == 0
+          JumpIfZero(18),
           CopyFrom(2),
+          // continue multiplication loop
           Jump(11),
-          Outbox,
-          Jump(1),
           CopyFrom(0),
           Outbox,
           Jump(1)
         )
       )
 
-    assertResult(22)(solution.instructions.size)
+    assertResult(20)(solution.instructions.size)
 
     assertResult(1)(solution.results.size)
     assertResult(condition.expectedOut)(solution.results(condition).fold(x => {
