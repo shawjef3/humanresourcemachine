@@ -108,7 +108,6 @@ package object humanresourcemachine {
     }
   }
 
-
   private val handsAreEmpty: DLeft[String] = DLeft("hands are empty")
 
   private def outOfBounds(i: Int): DLeft[String] = {
@@ -128,7 +127,7 @@ package object humanresourcemachine {
   }
 
   private implicit class ToRightMemo[A](val opt: Option[A]) extends AnyVal {
-    def toRightMemo[B](left: DLeft[B]): Disjunction[B, A] = {
+    def toRightMemo[B](left: => DLeft[B]): Disjunction[B, A] = {
       opt match {
         case Some(value) =>
           value.right
@@ -270,7 +269,7 @@ package object humanresourcemachine {
   case class Jump(i: Int) extends Instruction {
     override def run(level: Level, state: State): InstructionResult = {
       state.copy(
-        here = i
+        here = i - 1
       ).right
     }
 
@@ -284,7 +283,7 @@ package object humanresourcemachine {
       } yield {
         if (hands == 0) {
           state.copy(
-            here = i
+            here = i - 1
           )
         } else state.copy(
           here = state.here + 1
@@ -302,7 +301,7 @@ package object humanresourcemachine {
       } yield {
         if (hands < 0) {
           state.copy(
-            here = i
+            here = i - 1
           )
         } else state.copy(
           here = state.here + 1
