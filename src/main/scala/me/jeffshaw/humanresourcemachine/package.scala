@@ -22,26 +22,29 @@ package object humanresourcemachine {
 
   object State {
     def init(
-      in: Vector[Int]
+      in: Vector[Int],
+      board: Vector[Option[Int]]
     ): State = {
       State(
         in = in,
         out = Vector(),
         hands = None,
-        board = Vector.fill(10)(None),
+        board = board,
         here = 0
       )
     }
 
     def init(
-      condition: Level.Condition
+      condition: Level.Condition,
+      board: Vector[Option[Int]]
     ): State = {
-      init(condition.in)
+      init(condition.in, board)
     }
   }
 
   final case class Level(
-    conditions: Set[Level.Condition]
+    conditions: Set[Level.Condition],
+    board: Vector[Option[Int]]
   )
 
   object Level {
@@ -74,7 +77,7 @@ package object humanresourcemachine {
     }
 
     def run(condition: Level.Condition): Result = {
-      val initialState = State.init(condition.in)
+      val initialState = State.init(condition.in, level.board)
       run(condition, initialState, Vector.empty)
     }
 

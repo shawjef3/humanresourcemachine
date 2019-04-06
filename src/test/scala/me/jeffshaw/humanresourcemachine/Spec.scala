@@ -16,7 +16,7 @@ class Spec extends FunSuite {
 
     val actual =
       Jump(3).run(
-        Level(Set()),
+        Level(Set(), Vector.fill[Option[Int]](10)(None)),
         state
       )
 
@@ -36,7 +36,7 @@ class Spec extends FunSuite {
 
     val actual =
       JumpIfZero(3).run(
-        Level(Set()),
+        Level(Set(), Vector.fill[Option[Int]](10)(None)),
         state
       )
 
@@ -56,7 +56,7 @@ class Spec extends FunSuite {
 
     val actual =
       JumpIfZero(3).run(
-        Level(Set()),
+        Level(Set(), Vector.fill[Option[Int]](10)(None)),
         state
       )
 
@@ -76,7 +76,7 @@ class Spec extends FunSuite {
 
     val actual =
       JumpIfZero(3).run(
-        Level(Set()),
+        Level(Set(), Vector.fill[Option[Int]](10)(None)),
         state
       )
 
@@ -96,7 +96,7 @@ class Spec extends FunSuite {
 
     val actual =
       BumpUp(0).run(
-        Level(Set()),
+        Level(Set(), Vector.fill[Option[Int]](10)(None)),
         state
       )
 
@@ -121,7 +121,7 @@ class Spec extends FunSuite {
 
     val actual =
       BumpDown(0).run(
-        Level(Set()),
+        Level(Set(), Vector.fill[Option[Int]](10)(None)),
         state
       )
 
@@ -146,7 +146,7 @@ class Spec extends FunSuite {
 
     val actual =
       Add(0).run(
-        Level(Set()),
+        Level(Set(), Vector.fill[Option[Int]](10)(None)),
         state
       )
 
@@ -185,7 +185,7 @@ class Spec extends FunSuite {
       )
     }
 
-    val level = Level(Set(condition))
+    val level = Level(Set(condition), Vector.fill[Option[Int]](10)(None))
 
     val solution =
       Solution(
@@ -239,7 +239,7 @@ class Spec extends FunSuite {
       )
     }
 
-    val level = Level(Set(condition))
+    val level = Level(Set(condition), Vector.fill[Option[Int]](10)(None))
 
     val solution =
       Solution(
@@ -268,6 +268,44 @@ class Spec extends FunSuite {
           Outbox,
           Jump(1),
           CopyFrom(0),
+          Outbox,
+          Jump(1)
+        )
+      )
+
+    assertResult(1)(solution.results.size)
+    assertResult(condition.expectedOut)(solution.results(condition).fold(x => {
+      println(x._2 + " after " + x._1)
+      x._1.last.out
+    }, states => states.last.out))
+  }
+
+  test("zero terminated sum") {
+    val condition = {
+      val in = Vector(5,6,0,-1,3,17,0)
+
+      val expectedOuts = Vector(19,11)
+
+      Level.Condition(
+        in = in,
+        expectedOut = expectedOuts
+      )
+    }
+
+    val level = Level(Set(condition), Vector.fill[Option[Int]](5)(None) :+ Some(0))
+
+    val solution =
+      Solution(
+        level = level,
+        instructions = Vector(
+          CopyFrom(5),
+          CopyTo(2),
+          Inbox,
+          JumpIfZero(8),
+          Add(2),
+          CopyTo(2),
+          Jump(3),
+          CopyFrom(2),
           Outbox,
           Jump(1)
         )
