@@ -246,25 +246,29 @@ class Spec extends FunSuite {
         level = level,
         instructions = Vector(
           Inbox,
+          // accumulator
           CopyTo(0),
+          // value storage
           CopyTo(2),
           Inbox,
+          // multiplication counter
           CopyTo(1),
-          JumpIfZero(21),
+          // skip multiplication by zero
+          JumpIfZero(18),
           CopyFrom(0),
-          JumpIfZero(21),
+          // skip multiplication by zero
+          JumpIfZero(18),
+          // multiplication by 1 is identity
           BumpDown(1),
-          JumpIfZero(23),
+          JumpIfZero(20),
+          // multiplication by addition loop
           CopyFrom(2),
           Add(0),
           CopyTo(0),
           BumpDown(1),
-          JumpIfZero(18),
+          JumpIfZero(20),
           CopyFrom(2),
           Jump(11),
-          CopyFrom(0),
-          Outbox,
-          Jump(1),
           Outbox,
           Jump(1),
           CopyFrom(0),
@@ -272,6 +276,8 @@ class Spec extends FunSuite {
           Jump(1)
         )
       )
+
+    assertResult(22)(solution.instructions.size)
 
     assertResult(1)(solution.results.size)
     assertResult(condition.expectedOut)(solution.results(condition).fold(x => {
